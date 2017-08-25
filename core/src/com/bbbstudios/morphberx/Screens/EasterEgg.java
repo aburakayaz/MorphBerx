@@ -4,6 +4,7 @@ package com.bbbstudios.morphberx.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bbbstudios.morphberx.MorphBerx;
 
@@ -20,12 +22,11 @@ import com.bbbstudios.morphberx.MorphBerx;
 public class EasterEgg implements Screen
 {
     private static final int FRAME_COUNT = 9;
-    private Viewport viewport;
     private MorphBerx main;
     private SpriteBatch batch;
     private Animation<Sprite> animation;
     private AssetManager assetManager;
-    private Sound sound;
+    private Music music;
     private Sprite currentFrame;
     private float scale, stateTimer;
 
@@ -34,55 +35,42 @@ public class EasterEgg implements Screen
         super();
         this.main = main;
         this.assetManager = main.assetManager;
-        batch = new SpriteBatch();
-
-        setViewport();
-        loadFrames();
-        arrangeFrames();
-        loadSound();
-        stateTimer = 0;
-        loadAssets();
-    }
-
-    public void setViewport()
-    {
-        viewport = new FitViewport(
-                MorphBerx.V_WIDTH,
-                MorphBerx.V_HEIGHT,
-                new OrthographicCamera()
-        );
     }
 
     private void arrangeFrames()
     {
         Array<Sprite> frames = new Array<Sprite>();
         Texture texture;
-        Sprite sprite;
 
         for (int i = 0; i < FRAME_COUNT; i++) {
-            texture = assetManager.get("animation/" + i + ".png", Texture.class);
-            sprite = new Sprite(texture);
-            frames.add(sprite);
+            texture = assetManager
+                    .get("animation/" + i + ".png", Texture.class);
+            frames.add(new Sprite(texture));
         }
 
-        scale = viewport.getWorldWidth() / frames.get(0).getWidth();
+        scale = Gdx.graphics.getWidth() / frames.get(0).getWidth();
 
-        animation = new Animation<Sprite>(0.05f, frames, Animation.PlayMode.LOOP);
+        Gdx.app.log("SCALE", "" + scale);
+        animation = new Animation<Sprite>
+                (0.05f, frames, Animation.PlayMode.LOOP);
 
         frames.clear();
     }
 
-    private void loadSound()
+    private void loadMusic()
     {
-        assetManager.load("sounds/opening.ogg", Sound.class);
+        assetManager.load("sounds/opening.ogg", Music.class);
         assetManager.finishLoading();
-        sound = assetManager.get("sounds/opening.ogg");
+        music = assetManager.get("sounds/opening.ogg", Music.class);
+
+        //sound = Gdx.audio.newSound(Gdx.files.internal("sounds/opening.ogg"));
     }
 
     private void loadFrames()
     {
         for (int i = 0; i < FRAME_COUNT; i++) {
-            assetManager.load("animation/" + i + ".png", Texture.class);
+            assetManager
+                    .load("animation/" + i + ".png", Texture.class);
         }
         assetManager.finishLoading();
     }
@@ -90,7 +78,15 @@ public class EasterEgg implements Screen
     @Override
     public void show()
     {
-        sound.play();
+        batch = new SpriteBatch();
+
+
+        loadFrames();
+        arrangeFrames();
+        loadMusic();
+        stateTimer = 0;
+        music.play();
+        loadAssets();
     }
 
     @Override
@@ -106,7 +102,7 @@ public class EasterEgg implements Screen
         batch.begin();
         batch.draw(
                 animation.getKeyFrame(stateTimer, true),
-                0, (viewport.getWorldHeight() -
+                0, (Gdx.graphics.getHeight() -
                 currentFrame.getHeight() * scale) / 2,
                 currentFrame.getWidth() * scale,
                 currentFrame.getHeight() * scale
@@ -117,6 +113,8 @@ public class EasterEgg implements Screen
     private void update(float delta)
     {
         currentFrame = animation.getKeyFrame(delta);
+
+        assetManager.update();
 
         if (stateTimer >= 3.5f
                 && assetManager.getQueuedAssets() == 0) {
@@ -129,8 +127,6 @@ public class EasterEgg implements Screen
         for (int i = 0; i < MorphBerx.SOUND_COUNT; i++) {
             assetManager.load("sounds/" + i + ".ogg", Sound.class);
         }
-
-        assetManager.finishLoading();
     }
 
     @Override

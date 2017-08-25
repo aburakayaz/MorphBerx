@@ -53,8 +53,6 @@ public class SplashScreen implements Screen
         splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
-
-
     @Override
     public void render(float delta)
     {
@@ -71,8 +69,10 @@ public class SplashScreen implements Screen
     private void update(float delta)
     {
         tweenManager.update(delta);
+        assetManager.update();
 
-        if (tweenManager.getRunningTweensCount() == 0) {
+        if (assetManager.getQueuedAssets() == 0 &&
+                tweenManager.getRunningTweensCount() == 0) {
             main.setScreen(new SoundScreen(main));
         }
     }
@@ -82,8 +82,6 @@ public class SplashScreen implements Screen
         for (int i = 0; i < MorphBerx.SOUND_COUNT; i++) {
             assetManager.load("sounds/" + i + ".ogg", Sound.class);
         }
-
-        assetManager.finishLoading();
     }
 
     @Override
