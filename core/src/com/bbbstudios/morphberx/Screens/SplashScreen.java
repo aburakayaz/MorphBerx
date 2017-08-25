@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Json;
 import com.bbbstudios.morphberx.MorphBerx;
 import com.bbbstudios.morphberx.Tween.SpriteAccessor;
 
@@ -37,18 +36,24 @@ public class SplashScreen implements Screen
     public void show()
     {
         batch = new SpriteBatch();
-        texture = new Texture("splashscreen.png");
-        splash = new Sprite(texture);
         tweenManager = new TweenManager();
-
         Tween.registerAccessor(Sprite.class, new SpriteAccessor());
+        setTexture();
 
-        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Tween.set(splash, SpriteAccessor.ALPHA).target(0).start(tweenManager);
         Tween.to(splash, SpriteAccessor.ALPHA, 2).target(1).start(tweenManager);
         loadAssets();
-        Tween.to(splash, SpriteAccessor.ALPHA, 2).target(0)/*.delay(2)*/.start(tweenManager); // TODO: Change
+        Tween.to(splash, SpriteAccessor.ALPHA, 2).target(0).delay(2).start(tweenManager);
     }
+
+    private void setTexture()
+    {
+        texture = new Texture("splashscreen.png");
+        splash = new Sprite(texture);
+        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+
 
     @Override
     public void render(float delta)
