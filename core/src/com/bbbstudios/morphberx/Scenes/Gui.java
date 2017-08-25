@@ -2,6 +2,7 @@ package com.bbbstudios.morphberx.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,6 +23,7 @@ import com.bbbstudios.morphberx.MorphBerx;
 public class Gui implements Disposable
 {
     private static final int SOUND_COUNT = MorphBerx.SOUND_COUNT;
+    private static final int MUSIC_COUNT = MorphBerx.MUSIC_COUNT;
     private Viewport viewport;
     private Stage stage;
     private Array<Button> buttons;
@@ -29,7 +31,9 @@ public class Gui implements Disposable
     private Skin skin;
     private Table table;
     private Sound currentSound;
-    private boolean isPlayingSound;
+    private Music currentMusic;
+    private boolean isPlayingSound,
+            isPlayingMusic;
 
     public Gui(AssetManager assetManager, SpriteBatch batch)
     {
@@ -40,6 +44,7 @@ public class Gui implements Disposable
         setViewport();
         stage = new Stage(viewport, batch);
         isPlayingSound = false;
+        isPlayingMusic = false;
         setButtons();
         setTable();
 
@@ -54,12 +59,25 @@ public class Gui implements Disposable
             currentSound.stop();
         }
 
-        currentSound = assetManager.get("sounds/" + i + ".ogg", Sound.class);
-        currentSound.play();
-        isPlayingSound = true;
+        if (isPlayingMusic) {
+            currentMusic.stop();
+        }
+
+        if (i < SOUND_COUNT) {
+            currentSound = assetManager.get("sounds/" + i + ".ogg", Sound.class);
+            currentSound.play();
+            isPlayingSound = true;
+            isPlayingMusic = false;
+            return;
+        }
+
+        currentMusic = assetManager.get("sounds/m" + i + ".ogg", Music.class);
+        currentMusic.play();
+        isPlayingMusic = true;
+        isPlayingSound = false;
     }
 
-    public void setViewport()
+    private void setViewport()
     {
         viewport = new FitViewport(
                 MorphBerx.V_WIDTH,
@@ -74,7 +92,7 @@ public class Gui implements Disposable
         table.top();
         table.setFillParent(true);
 
-        for (int i = 0; i < SOUND_COUNT; i++) {
+        for (int i = 0; i < SOUND_COUNT + MUSIC_COUNT; i++) {
             table.add(buttons.get(i)).width(viewport.getWorldWidth() / 4).expandX().padTop(10);
             if ((i + 1) % 3 == 0) {
                 table.row();
@@ -84,7 +102,7 @@ public class Gui implements Disposable
 
     private void setButtons()
     {
-        for (int i = 0; i < SOUND_COUNT; i++) {
+        for (int i = 0; i < SOUND_COUNT + MUSIC_COUNT; i++) {
             buttons.add(createButton("" + (i + 1)));
             addListenerToButton(i);
         }

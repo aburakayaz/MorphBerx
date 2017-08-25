@@ -4,6 +4,7 @@ package com.bbbstudios.morphberx.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -42,7 +43,7 @@ public class SplashScreen implements Screen
 
         Tween.set(splash, SpriteAccessor.ALPHA).target(0).start(tweenManager);
         Tween.to(splash, SpriteAccessor.ALPHA, 2).target(1).start(tweenManager);
-        loadAssets();
+        main.loadAssets();
         Tween.to(splash, SpriteAccessor.ALPHA, 2).target(0).delay(2).start(tweenManager);
     }
 
@@ -74,13 +75,6 @@ public class SplashScreen implements Screen
         if (assetManager.getQueuedAssets() == 0 &&
                 tweenManager.getRunningTweensCount() == 0) {
             main.setScreen(new SoundScreen(main));
-        }
-    }
-
-    private void loadAssets()
-    {
-        for (int i = 0; i < MorphBerx.SOUND_COUNT; i++) {
-            assetManager.load("sounds/" + i + ".ogg", Sound.class);
         }
     }
 

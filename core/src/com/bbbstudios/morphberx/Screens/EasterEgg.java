@@ -80,13 +80,12 @@ public class EasterEgg implements Screen
     {
         batch = new SpriteBatch();
 
-
         loadFrames();
         arrangeFrames();
         loadMusic();
         stateTimer = 0;
         music.play();
-        loadAssets();
+        main.loadAssets();
     }
 
     @Override
@@ -116,16 +115,9 @@ public class EasterEgg implements Screen
 
         assetManager.update();
 
-        if (stateTimer >= 3.5f
+        if (stateTimer >= 5f
                 && assetManager.getQueuedAssets() == 0) {
             main.setScreen(new SoundScreen(main));
-        }
-    }
-
-    private void loadAssets()
-    {
-        for (int i = 0; i < MorphBerx.SOUND_COUNT; i++) {
-            assetManager.load("sounds/" + i + ".ogg", Sound.class);
         }
     }
 
